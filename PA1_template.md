@@ -727,15 +727,4 @@ compare_line_interval2
 
 ![](PA1_template_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
 
-```r
-#re use the histogram and mean and median sections above
-#find the average (mean)
-avg_daily_steps_imputed2<-mean(daily_interval10$daily_steps,na.rm=TRUE)
-avg_daily_steps_imputed2
-```
-
-```
-## [1] 39.34739
-```
-
 Overall the imputed mean is more similar to the original data and the imputed median file most often had an estimate lower than the oringal data set.  It tended to bias low.
