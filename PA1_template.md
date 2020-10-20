@@ -7,9 +7,7 @@ output:
     keep_md: true
 ---
 
-```{r setup, include=FALSE} 
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-```
+
 
 ## Introduction
 
@@ -57,7 +55,8 @@ are a total of 17,568 observations in this
 dataset.
 
 ## Load required packages
-```{r}
+
+```r
 #this loads the required packages for this entire markdown
 
 # use this to read in the zip file in a single line
@@ -78,7 +77,8 @@ library(lubridate)
 
 ## Loading and preprocessing the data
 This section performs the initial loads and preprocessing steps to summarize the data. Provides human labels regarding time(day and day type) information for context.  The summaries look at total steps and average total steps.  The aggregations are considered regardless of day, looking at day of week, and also looks at the day type (weekday or weekend). Not all were used, but were considered during the intial exploration of the data set.
-```{r}
+
+```r
 #use reader for the zip file and use of the R Studio IDE GUI
 
 #load the data and specify the data types for the activity information and the formats YYYY-mm-dd and make both the interval and steps information integers
@@ -157,38 +157,51 @@ daily_interval8<-activity %>%
   mutate(day_of_week=wday(date,label=TRUE),week_or_weekend=ifelse(day_of_week     %in% c("Sat", "Sun"), "Weekend", "Weekday")) %>% 
   group_by(interval,day_of_week) %>% 
   summarise(daily_steps=median(steps,na.rm=TRUE))
-
 ```
 
 ## What is mean total number of steps taken per day?
 
 To find the average (mean) and median total number of steps recorded in the 2 month period we use the mean and median commands.  This calculation does not consider the missing NA values. The average daily total steps was~ **10,766** and median daily toal steps was **10,765**.  Note the recommended activity for most fitness wearables suggest a goal of 10,000 steps a day. This seems like a reasonable result.
 
-```{r}
+
+```r
 #find the average (mean)
 avg_daily_steps<-mean(daily_steps$daily_steps,na.rm=TRUE)
 avg_daily_steps
 ```
 
-```{r}
+```
+## [1] 10766.19
+```
+
+
+```r
 #find the median (median)
 median_daily_steps<-median(daily_steps$daily_steps, na.rm=TRUE)
 median_daily_steps
 ```
 
+```
+## [1] 10765
+```
+
 ## Create Histogram (Daily Total Steps)
 We create a basic histogram of the frequency of a given daily total step sum for the 2-month period.  We note that in general most of the daily step totals are between 10-15,000.
 
-```{r}
+
+```r
 hist<-ggplot(data = daily_activity, aes(x =daily_steps)) + geom_histogram()+
   labs(title="Step Data 01 OCT- 30 NOV 2012", x=" Daily Total Steps", y="Frequency") +
   theme_light()
 hist
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
 We designate the weekday (pink) and the weekend(green) for the same 2-month period.  We note that in general most of the daily step totals are still between 10-15,000.  Most weekends step totals are >10,000.
 
-```{r}
+
+```r
 #adds color based on the label of weekday or weekend as an overlay
 hist2<-ggplot(data = daily_activity, aes(x = daily_steps, fill = week_or_weekend)) + geom_histogram()+
   labs(title="Step Data 01 OCT- 30 NOV 2012-Weekday vs Weekend", x="Total Steps", y="Frequency") +
@@ -199,19 +212,25 @@ hist2<-ggplot(data = daily_activity, aes(x = daily_steps, fill = week_or_weekend
 hist2
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
 When viewed side by side, we can also see this comparison of the weekday and weekend step totals for the 2-month period from 01 OCT 2012 - 30 NOV 2012.
 
-```{r}
+
+```r
 #same information presented using a facet wrap to show the weekday and weekend
 hist4<-ggplot(data = daily_activity, aes(x = daily_steps)) + geom_histogram()+facet_wrap(~ week_or_weekend)
 hist4
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
 ## What is the average daily activity pattern?
 
 To explore the average daily activity pattern for the 2-month period, a time series was developed to show the average number of steps regardless of the day for a specific 5-minute interval.  The resulting line plot shows the average total steps throughout the day midnight to midnight.  Note the relatively low activity between midnight and 0500 followed by increased activity until 1000.  The peak step activity was noted between the interval of 0830 and 0835 at **~206**  average steps in that interval or an average daily toal of **10,927** steps. Note a decline in activity after 2000, roughtly 8 PM in the United States.
 
-```{r}
+
+```r
 #create the line graph based on the 5 minute intervals
 steps_daily_line <- ggplot(daily_interval4, aes(x=interval, y=daily_steps)) +
            geom_line(na.rm=TRUE) +  
@@ -224,17 +243,30 @@ steps_daily_line <- ggplot(daily_interval4, aes(x=interval, y=daily_steps)) +
 steps_daily_line
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
+
+```r
 # find the time period (5-min) with the highest step activity using max command
 max(daily_interval4$daily_steps)
 ```
 
+```
+## [1] 206.1698
+```
+
 When considering the day of the week we find that the highest step activity is on Friday between 0845 and 0850 at **~329 steps**.  A graphical look at this also showed that Friday, Saturday, and Sunday tended to have more activity in the middle of the day.  The other days Mon-Thursday tended to have a bath tub shape.
-```{r}
+
+```r
 max(daily_interval5$daily_steps)
 ```
 
-```{r}
+```
+## [1] 328.5714
+```
+
+
+```r
 steps_daily_line2 <- ggplot(daily_interval5, aes(x=daily_interval5$interval, y=daily_interval2$daily_steps)) +
            geom_line(na.rm=TRUE)+ facet_grid(daily_interval5$day_of_week)+
            ggtitle("Daily Steps 01 OCT- 30 NOV 2012") +
@@ -246,9 +278,12 @@ steps_daily_line2 <- ggplot(daily_interval5, aes(x=daily_interval5$interval, y=d
 steps_daily_line2
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+
 When considering the weekday versus weekend find that the highest step activity is on Friday between 0830 and 0835 at **~234 steps**.
 
-```{r}
+
+```r
 steps_daily_line3 <- ggplot(daily_interval6, aes(x=daily_interval6$interval, y=daily_interval6$daily_steps)) +
            geom_line(na.rm=TRUE)+facet_grid(as.factor(daily_interval6$week_or_weekend))+
            ggtitle("Daily Steps 01 OCT- 30 NOV 2012") +
@@ -259,8 +294,15 @@ steps_daily_line3 <- ggplot(daily_interval6, aes(x=daily_interval6$interval, y=d
 
 steps_daily_line3
 ```
-```{r}
+
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+
+```r
 max(daily_interval6$daily_steps)
+```
+
+```
+## [1] 234.1026
 ```
 
 ## Imputing missing values
@@ -270,19 +312,30 @@ values (coded as `NA`). The presence of missing days may introduce
 bias into some calculations or summaries of the data.
 
 Lets consider the impact of missing values.  Summing the total NA's there are **2,304** missing entries.  The data set has 17,568 observations.  This means there are roughly **13%** or between 8 days of missing step information.  When looking when these NA's occur there were 6 NAs on a Weekday (Mon-Fri) and 2 NAs on a Weekend.  There were 2 missing NAs on Mondays and Fridays. Tuesday was the only day that had no NAs.  Each other day of the Sun, Wed, Thurs, Sat each had one NA.  See NA analysis below.
-```{r}
+
+```r
 # to find the NA values first lets sum the number of NA.
 Missing<-sum(is.na(activity$steps))
 Missing
 ```
 
-```{r}
+```
+## [1] 2304
+```
+
+
+```r
 #find percent missing
 Percent_Missing<-Missing/length(activity$steps)
 Percent_Missing
 ```
 
-```{r}
+```
+## [1] 0.1311475
+```
+
+
+```r
 #show which days are missing by count
 
 #filter for na (8)
@@ -295,12 +348,28 @@ day_missing<-table(id_missing$day_of_week)
 type_missing<-table(id_missing$week_or_weekend)
 
 day_missing
+```
+
+```
+## 
+## Sun Mon Tue Wed Thu Fri Sat 
+##   1   2   0   1   1   2   1
+```
+
+```r
 type_missing
+```
+
+```
+## 
+## Weekday Weekend 
+##       6       2
 ```
 ## Lets devise a strategy for filling in all of the missing values in the dataset.
 
 To account for estimates of the missing values it seems prudent to take into account the day of the week.  There tended to be higher activity on the weeked than the weekday.  We will calculate the daily median and mean as possible inputs to impute the missing values.  This portion will look at the daily activity.
-```{r}
+
+```r
 #find the median daily activity by day
 median_by_day<-daily_activity %>% 
   group_by(day_of_week) %>% 
@@ -310,12 +379,12 @@ median_by_day<-daily_activity %>%
 mean_by_day<-daily_activity %>% 
   group_by(day_of_week) %>% 
   summarise(daily_steps=mean(daily_steps,na.rm=TRUE))
-
 ```
 
 This performs the requsite table joins to lookup of the imputed values for the new data set using the developed strategy.
 
-```{r}
+
+```r
 #specifies the column order
 col_order <- c("date","daily_steps","day_of_week","week_or_weekend")
 
@@ -334,45 +403,63 @@ names(impute_data_median)[names(impute_data_median)=="daily_steps.x"] <- "daily_
 impute_data_median <- impute_data_median[, col_order]
 ```
 This portion of the analysis combines the imputed data with the original complete cases.
-```{r}
+
+```r
 #row bind the imputed with the complete cases
 imputed_mean<-rbind(id_complete,impute_data_mean)
 imputed_median<-rbind(id_complete,impute_data_median)
 ```
 ## Updated Histogram (Daily Total Steps)
-```{r}
+
+```r
 #re use the histogram and mean and median sections above
 #find the average (mean)
 avg_daily_steps_imputed<-mean(imputed_mean$daily_steps,na.rm=TRUE)
 avg_daily_steps_imputed
+```
 
+```
+## [1] 10821.21
 ```
 
 Here is the difference in the average daily step in the orignal data and using the mean (daily totals)`
 
-```{r}
+
+```r
 diff_mean<-avg_daily_steps_imputed-avg_daily_steps
 diff_mean
-
 ```
 
-```{r}
+```
+## [1] 55.02092
+```
+
+
+```r
 #find the median (median)
 median_daily_steps_imputed<-median(imputed_median$daily_steps, na.rm=TRUE)
 median_daily_steps_imputed
+```
 
+```
+## [1] 11015
 ```
 
 Here is the difference in the median daily step in the orignal data and using the median (daily totals)`
 
-```{r}
+
+```r
 diff_median<-median_daily_steps_imputed-median_daily_steps
 diff_median
+```
 
+```
+## [1] 250
 ```
 
 This section of the analysis builds the necessary data for the updated histograms
-```{r}
+
+```r
 #tag each source
 daily_activity$source<-"Original"
 imputed_mean$source<-"Imputed Mean"
@@ -383,7 +470,8 @@ compare<-rbind(daily_activity,imputed_mean,imputed_median)
 
 This uses the imputed daily mean
 
-```{r}
+
+```r
 #adds color based on the label of weekday or weekend as an overlay
 hist6<-ggplot(data =imputed_mean, aes(x = daily_steps)) + geom_histogram()+
   labs(title="Step Data-Imputed Mean 01 OCT- 30 NOV 2012", x="Total Steps", y="Frequency") +
@@ -392,9 +480,12 @@ hist6<-ggplot(data =imputed_mean, aes(x = daily_steps)) + geom_histogram()+
 hist6
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+
 This uses the imputed daily median
 
-```{r}
+
+```r
 #adds color based on the label of weekday or weekend as an overlay
 hist7<-ggplot(data =imputed_median, aes(x = daily_steps)) + geom_histogram()+
   labs(title="Step Data-Imputed Median 01 OCT- 30 NOV 2012", x="Total Steps", y="Frequency") +
@@ -403,9 +494,12 @@ hist7<-ggplot(data =imputed_median, aes(x = daily_steps)) + geom_histogram()+
 hist7
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
+
 Here we show a comparison of the histograms of the original data and the imputed values using the mean and the median.  Again the pink and green denotes weekday and weekend. Note using the imputed mean we had an average total step increase of **250** and a average total step increase of **55** when using the imputed median dataset.
 
-```{r}
+
+```r
 hist8<-ggplot(data =compare, aes(x = daily_steps, fill = week_or_weekend)) + geom_histogram()+
   labs(title="Step Data 01 OCT- 30 NOV 2012-Weekday vs Weekend", x="Total Steps", y="Frequency") + facet_grid(as.factor(compare$source))+
   scale_fill_discrete(name = "Day Type", labels = c("Weekday", "Weekend"))+
@@ -413,14 +507,16 @@ hist8<-ggplot(data =compare, aes(x = daily_steps, fill = week_or_weekend)) + geo
   theme(legend.position = "bottom")
   
 hist8
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
 
 ## Compare temporal view of the original and imputed data sets
 
 In this section we show the impact to the daily step counts using a time series.  Similar to the histogram comparison above, we provide the original data set with missing values (NAs) and then show what the time series looks like when using the imputed mean and median respectively.  Finally we show the three time series on a single plot so that the reader can visually see the differences in the imputations for the information. 
 
-```{r}
+
+```r
 #create the line graph based on the step data
 steps_daily_lines <- ggplot(daily_steps, aes(x=date, y=daily_steps)) +
            geom_line(na.rm=TRUE) +
@@ -431,7 +527,11 @@ steps_daily_lines <- ggplot(daily_steps, aes(x=date, y=daily_steps)) +
            theme(text = element_text(size=18))
 
 steps_daily_lines
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
+
+```r
 steps_daily_lines2 <- ggplot(imputed_mean, aes(x=date, y=daily_steps)) +
            geom_line(na.rm=TRUE) +
            ggtitle("Imputed Mean-Daily Steps 01 OCT- 30 NOV 2012") +
@@ -441,7 +541,11 @@ steps_daily_lines2 <- ggplot(imputed_mean, aes(x=date, y=daily_steps)) +
            theme(text = element_text(size=18))
 
 steps_daily_lines2
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-28-2.png)<!-- -->
+
+```r
 steps_daily_lines3 <- ggplot(imputed_median, aes(x=date, y=daily_steps)) +
            geom_line(na.rm=TRUE) +
            ggtitle("Imputed Median-Daily Steps 01 OCT- 30 NOV 2012") +
@@ -453,7 +557,10 @@ steps_daily_lines3 <- ggplot(imputed_median, aes(x=date, y=daily_steps)) +
 steps_daily_lines3
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-28-3.png)<!-- -->
+
+
+```r
 compare_steps_daily <- ggplot(compare, aes(x=date, y=daily_steps,color=source)) +
            geom_line(na.rm=TRUE) +
            ggtitle("Comparison-Daily Steps 01 OCT- 30 NOV 2012") +
@@ -465,6 +572,8 @@ compare_steps_daily <- ggplot(compare, aes(x=date, y=daily_steps,color=source)) 
 compare_steps_daily
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
+
 ## Are there differences in activity patterns between weekdays and weekends?
 By including the added detail for the weekend we still see increased activity (40-60 steps) for the mean and median daily step values.  This provides added awareness when comparing to our original excursion in looking at day of the week and type of day (weekday or weekend).  We noted previously increased activity on Fri-Sun, a later start to activity on the weekend, and a mountain versus bathtub shape to the weekend.
 
@@ -475,14 +584,16 @@ Similar to the histogram comparison above, we provide the original data set with
 First we develop the mean and median by day of week and interval(time)
 
 
-```{r}
+
+```r
 #develop the steps per interval
 interval_mean<-daily_interval5
 interval_median<-daily_interval8
 ```
 
 Next we split the data set into two subsets.  Incomplete (NA's) and complete cases.
-```{r}
+
+```r
 #filter for nan created due to the NAs (2304)
 id_missing2<-daily_interval7 %>% filter(daily_steps=="NaN")
 #filter the remaining complete cases (15264)
@@ -491,7 +602,8 @@ id_complete2<-daily_interval7 %>%filter(daily_steps!="NaN")
 
 Here we preform the associated joins, labeling, and sorting to build two new data sets using the imputed mean and median.
 
-```{r}
+
+```r
 #specifies the column order
 col_order2 <- c("date","interval","daily_steps","day_of_week","week_or_weekend")
 
@@ -508,12 +620,12 @@ impute_data_median2$daily_steps.x<-impute_data_median2$daily_steps.y
 impute_data_median2<-impute_data_median2[,-6]
 names(impute_data_median2)[names(impute_data_median2)=="daily_steps.x"] <- "daily_steps"
 impute_data_median2 <- impute_data_median2[, col_order2]
-
 ```
 
 Sort the two imputed data sets to match the order of the original data set
 
-```{r}
+
+```r
 #row bind the imputed with the complete cases for the mean and arrange by date
 imputed_mean2<-rbind(id_complete2,impute_data_mean2)
 imputed_mean2<-arrange(imputed_mean2, date,interval)
@@ -524,7 +636,8 @@ imputed_median2<-arrange(imputed_median2, date,interval)
 
 This builds a single data from for graphing each of the outputs a time series. The user defined tag identifies the source of the data set.
 
-```{r}
+
+```r
 #tag each source
 daily_interval7$source<-"Original"
 imputed_mean2$source<-"Imputed Mean"
@@ -535,7 +648,8 @@ compare2<-rbind(daily_interval7,imputed_mean2,imputed_median2)
 
 This step builds summary tables for plotting all, and each individual data set in the same consistent manner
 
-```{r}
+
+```r
 #interval and week or weekend for the three sources (original, mean, median)
 daily_interval9<-compare2 %>% 
   group_by(interval,week_or_weekend,source) %>% 
@@ -555,13 +669,17 @@ daily_interval11<-imputed_median2 %>%
 
 Here is the original data with missing values
 
-```{r}
+
+```r
 steps_daily_line3
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
+
 Here is the interval data using the imputed mean dataset.
 
-```{r}
+
+```r
 imputed_line_interval2 <- ggplot(daily_interval10, aes(x=daily_interval10$interval, y=daily_interval10$daily_steps)) +
            geom_line(na.rm=TRUE)+facet_grid(as.factor(daily_interval10$week_or_weekend))+
            ggtitle("Daily Steps-Imputed Mean 01 OCT- 30 NOV 2012") +
@@ -573,9 +691,12 @@ imputed_line_interval2 <- ggplot(daily_interval10, aes(x=daily_interval10$interv
 imputed_line_interval2
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
+
 Here is the interval data using the imputed median dataset.
 
-```{r}
+
+```r
 imputed_line_interval3 <- ggplot(daily_interval11, aes(x=daily_interval11$interval, y=daily_interval11$daily_steps)) +
            geom_line(na.rm=TRUE)+facet_grid(as.factor(daily_interval11$week_or_weekend))+
            ggtitle("Daily Steps-Imputed Median- 01 OCT- 30 NOV 2012") +
@@ -587,9 +708,12 @@ imputed_line_interval3 <- ggplot(daily_interval11, aes(x=daily_interval11$interv
 imputed_line_interval3
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
+
 Here is a comparison of the original versus the imputed mean and median datasets
 
-```{r}
+
+```r
 compare_line_interval2 <- ggplot(daily_interval9, aes(x=daily_interval9$interval, y=daily_interval9$daily_steps, color=daily_interval9$source)) +
            geom_line(na.rm=TRUE)+facet_grid(as.factor(daily_interval9$week_or_weekend))+
            ggtitle("Daily Steps 01 OCT- 30 NOV 2012") +
@@ -599,6 +723,19 @@ compare_line_interval2 <- ggplot(daily_interval9, aes(x=daily_interval9$interval
            theme(text = element_text(size=18),legend.position = "bottom")
 
 compare_line_interval2
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
+
+```r
+#re use the histogram and mean and median sections above
+#find the average (mean)
+avg_daily_steps_imputed2<-mean(daily_interval10$daily_steps,na.rm=TRUE)
+avg_daily_steps_imputed2
+```
+
+```
+## [1] 39.34739
 ```
 
 Overall the imputed mean is more similar to the original data and the imputed median file most often had an estimate lower than the oringal data set.  It tended to bias low.
